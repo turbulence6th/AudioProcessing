@@ -15,7 +15,7 @@ public class Main {
 
     private static void playComputerGeneratedAudio() {
 		WavUtil wavUtil = new WavUtil();
-		byte[] data = wavUtil.sample(5, 10_000, Frequency.A4.getFreq(), Frequency.B4.getFreq());
+		byte[] data = wavUtil.sample(5, 10_000, Note.A4.getFreq(), Note.B4.getFreq());
 
 		AudioPlayer audioPlayer = new AudioPlayer();
 		audioPlayer.play(data);
@@ -47,7 +47,7 @@ public class Main {
 	private static void generateAndSave() throws IOException {
 		WavUtil wavUtil = new WavUtil();
 
-		byte[] data = wavUtil.sample(5, 10_000, Frequency.A4.getFreq(), Frequency.B4.getFreq());
+		byte[] data = wavUtil.sample(5, 10_000, Note.A4.getFreq(), Note.B4.getFreq());
 
 		WavFile wavFile = wavUtil.generate(data);
 		wavUtil.writeToFile(wavFile, new File("generated.wav"));
