@@ -11,11 +11,12 @@ public class Main {
 //		recordAndPlay();
 //		recordAndSave();
 //		generateAndSave();
+        playTwinkleTwinkleLittleStar();
     }
 
     private static void playComputerGeneratedAudio() {
 		WavUtil wavUtil = new WavUtil();
-		byte[] data = wavUtil.sample(5, 10_000, Note.A4.getFreq(), Note.B4.getFreq());
+		byte[] data = wavUtil.sample(5, 10_000, NoteFrequency.A4, NoteFrequency.B4);
 
 		AudioPlayer audioPlayer = new AudioPlayer();
 		audioPlayer.play(data);
@@ -47,9 +48,16 @@ public class Main {
 	private static void generateAndSave() throws IOException {
 		WavUtil wavUtil = new WavUtil();
 
-		byte[] data = wavUtil.sample(5, 10_000, Note.A4.getFreq(), Note.B4.getFreq());
+		byte[] data = wavUtil.sample(5, 10_000, NoteFrequency.A4, NoteFrequency.B4);
 
 		WavFile wavFile = wavUtil.generate(data);
 		wavUtil.writeToFile(wavFile, new File("generated.wav"));
 	}
+
+	private static void playTwinkleTwinkleLittleStar() {
+        CompositionManager compositionManager = new CompositionManager();
+        Composition composition = compositionManager.twinkleTwinkleLittleStar();
+        AudioPlayer audioPlayer = new AudioPlayer();
+        audioPlayer.play(composition);
+    }
 }

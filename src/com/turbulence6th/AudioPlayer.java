@@ -111,6 +111,23 @@ public class AudioPlayer {
         }
     }
 
+    public void play(Composition composition) {
+        WavUtil wavUtil = new WavUtil();
+
+        ByteWrapper byteWrapper = new ByteWrapper();
+        byteWrapper.dataList = new ArrayList<>();
+        byteWrapper.sizeList = new ArrayList<>();
+
+        for (Note note : composition.getNoteList()) {
+            double second = 60 * note.getDuration().getDuration() / composition.getTempo();
+            byte[] data = wavUtil.sample(second, composition.getVolume(), note.getFrequency());
+            byteWrapper.dataList.add(data);
+            byteWrapper.sizeList.add(data.length);
+        }
+
+        play(merge(byteWrapper));
+    }
+
     private static class ByteWrapper {
         List<byte[]> dataList;
         List<Integer> sizeList;

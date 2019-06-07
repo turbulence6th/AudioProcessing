@@ -118,13 +118,13 @@ public class WavUtil {
         return wavFile;
     }
 
-    public byte[] sample(int second, int volume, double... freqs) {
+    public byte[] sample(double second, int volume, NoteFrequency... freqs) {
         int samplePerSecond = 8_000;
-        short[] samples = new short[samplePerSecond * second + 1];
+        short[] samples = new short[(int) (samplePerSecond * second + 1)];
         int index = 0;
         for (double t = 0; t < second; t += 1D / samplePerSecond) {
-            for (double freq : freqs) {
-                samples[index] += sound(t, freq, volume);
+            for (NoteFrequency freq : freqs) {
+                samples[index] += sound(t, freq.getFreq(), volume);
             }
 
             index++;
