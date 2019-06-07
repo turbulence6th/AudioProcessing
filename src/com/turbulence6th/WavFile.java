@@ -7,15 +7,16 @@ public class WavFile {
     private String format;
     private String subchunk1ID;
     private int subchunk1Size;
-    private int audioFormat;
-    private int numChannels;
+    private short audioFormat;
+    private short numChannels;
     private int sampleRate;
     private int byteRate;
-    private int blockAlign;
-    private int bitsPerSample;
+    private short blockAlign;
+    private short bitsPerSample;
     private String subchunk2ID;
     private int subchunk2Size;
     private byte[] data;
+    private byte[] info;
 
     public String getChunkID() {
         return chunkID;
@@ -57,19 +58,19 @@ public class WavFile {
         this.subchunk1Size = subchunk1Size;
     }
 
-    public int getAudioFormat() {
+    public short getAudioFormat() {
         return audioFormat;
     }
 
-    public void setAudioFormat(int audioFormat) {
+    public void setAudioFormat(short audioFormat) {
         this.audioFormat = audioFormat;
     }
 
-    public int getNumChannels() {
+    public short getNumChannels() {
         return numChannels;
     }
 
-    public void setNumChannels(int numChannels) {
+    public void setNumChannels(short numChannels) {
         this.numChannels = numChannels;
     }
 
@@ -89,19 +90,19 @@ public class WavFile {
         this.byteRate = byteRate;
     }
 
-    public int getBlockAlign() {
+    public short getBlockAlign() {
         return blockAlign;
     }
 
-    public void setBlockAlign(int blockAlign) {
+    public void setBlockAlign(short blockAlign) {
         this.blockAlign = blockAlign;
     }
 
-    public int getBitsPerSample() {
+    public short getBitsPerSample() {
         return bitsPerSample;
     }
 
-    public void setBitsPerSample(int bitsPerSample) {
+    public void setBitsPerSample(short bitsPerSample) {
         this.bitsPerSample = bitsPerSample;
     }
 
@@ -127,5 +128,13 @@ public class WavFile {
 
     public void setData(byte[] data) {
         this.data = data;
+    }
+
+    public byte[] getInfo() {
+        return info;
+    }
+
+    public void setInfo(byte[] info) {
+        this.info = info;
     }
 }

@@ -1,8 +1,6 @@
 package com.turbulence6th;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
@@ -38,11 +36,11 @@ public class WavUtil {
 
             Arrays.fill(buffer, (byte) 0x0);
             fis.read(buffer, 0, 2);
-            wavFile.setAudioFormat(ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).getInt());
+            wavFile.setAudioFormat(ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).getShort());
 
             Arrays.fill(buffer, (byte) 0x0);
             fis.read(buffer, 0, 2);
-            wavFile.setNumChannels(ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).getInt());
+            wavFile.setNumChannels(ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).getShort());
 
             Arrays.fill(buffer, (byte) 0x0);
             fis.read(buffer, 0, 4);
@@ -54,11 +52,11 @@ public class WavUtil {
 
             Arrays.fill(buffer, (byte) 0x0);
             fis.read(buffer, 0, 2);
-            wavFile.setBlockAlign(ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).getInt());
+            wavFile.setBlockAlign(ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).getShort());
 
             Arrays.fill(buffer, (byte) 0x0);
             fis.read(buffer, 0, 2);
-            wavFile.setBitsPerSample(ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).getInt());
+            wavFile.setBitsPerSample(ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).getShort());
 
             Arrays.fill(buffer, (byte) 0x0);
             fis.read(buffer, 0, 4);
@@ -71,8 +69,52 @@ public class WavUtil {
             byte[] data = new byte[wavFile.getSubchunk2Size()];
             fis.read(data);
             wavFile.setData(data);
+
+            byte[] info = new byte[wavFile.getChunkSize() - wavFile.getSubchunk2Size() - 36];
+            fis.read(info);
+            wavFile.setInfo(info);
         }
 
+        return wavFile;
+    }
+
+    public void writeToFile(WavFile wavFile, File file) throws IOException {
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(wavFile.getChunkID().getBytes());
+            fos.write(intToByte(wavFile.getChunkSize()));
+            fos.write(wavFile.getFormat().getBytes());
+            fos.write(wavFile.getSubchunk1ID().getBytes());
+            fos.write(intToByte(wavFile.getSubchunk1Size()));
+            fos.write(shortToByte(wavFile.getAudioFormat()));
+            fos.write(shortToByte(wavFile.getNumChannels()));
+            fos.write(intToByte(wavFile.getSampleRate()));
+            fos.write(intToByte(wavFile.getByteRate()));
+            fos.write(shortToByte(wavFile.getBlockAlign()));
+            fos.write(shortToByte(wavFile.getBitsPerSample()));
+            fos.write(wavFile.getSubchunk2ID().getBytes());
+            fos.write(intToByte(wavFile.getSubchunk2Size()));
+            fos.write(wavFile.getData());
+            fos.write(wavFile.getInfo());
+        }
+    }
+
+    public WavFile generate(byte[] data) {
+        WavFile wavFile = new WavFile();
+        wavFile.setChunkID("RIFF");
+        wavFile.setChunkSize(data.length + 36);
+        wavFile.setFormat("WAVE");
+        wavFile.setSubchunk1ID("fmt ");
+        wavFile.setSubchunk1Size(16);
+        wavFile.setAudioFormat((short) 1);
+        wavFile.setNumChannels((short) 1);
+        wavFile.setSampleRate(8_000);
+        wavFile.setByteRate(16_000);
+        wavFile.setBlockAlign((short) 2);
+        wavFile.setBitsPerSample((short) 16);
+        wavFile.setSubchunk2ID("data");
+        wavFile.setSubchunk2Size(data.length);
+        wavFile.setData(data);
+        wavFile.setInfo(new byte[0]);
         return wavFile;
     }
 
@@ -117,11 +159,22 @@ public class WavUtil {
     }
 
     private byte[] shortToByte(short s) {
-        byte byte1= (byte) (s);
-        byte byte2= (byte) ((s >> 8) & 0xff);
+        byte byte1 = (byte) (s);
+        byte byte2 = (byte) ((s >> 8) & 0xff);
 
         return new byte[] {
                 byte1, byte2
+        };
+    }
+
+    private byte[] intToByte(int i) {
+        byte byte1 = (byte) i;
+        byte byte2 = (byte) ((i >> 8) & 0xff);
+        byte byte3 = (byte) ((i >> 16) & 0xff);
+        byte byte4 = (byte) ((i >> 24) & 0xff);
+
+        return new byte[] {
+                byte1, byte2, byte3, byte4
         };
     }
 
